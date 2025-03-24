@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'product.dart';
 
 class DetailScreen extends StatelessWidget {
@@ -38,8 +38,6 @@ class DetailScreen extends StatelessWidget {
                   children: [
                     const Icon(Icons.star, color: Colors.yellow),
                     Text(" ${product.rating} [${product.reviewCount} reviews]"),
-                    const Spacer(),
-                    const Text("150 ml"),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -47,7 +45,7 @@ class DetailScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pink[300], padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12)),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pink[300]),
                     onPressed: () {},
                     child: const Text("Shop Now", style: TextStyle(color: Colors.white)),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'product_card.dart';
 import 'product.dart';
+import 'create_new_product.dart'; // Import new screen
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,8 +23,43 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Beauty Store"),
-        leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-        actions: [IconButton(icon: const Icon(Icons.shopping_bag_outlined), onPressed: () {})],
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        actions: [
+          IconButton(icon: const Icon(Icons.shopping_bag_outlined), onPressed: () {}),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color.fromARGB(255, 216, 160, 226)),
+              child: Text("Menu", style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text("Create Product"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateProductScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text("User Preferences"),
+              onTap: () {
+                // TODO: Navigate to user preferences screen
+              },
+            ),
+          ],
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -36,13 +72,18 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Category Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCategoryButton("Serum"),
-                    _buildCategoryButton("Cosmetics"),
-                    _buildCategoryButton("Facial Wash"),
-                  ],
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildCategoryButton("Serum"),
+                      const SizedBox(width: 10),
+                      _buildCategoryButton("Cosmetics"),
+                      const SizedBox(width: 10),
+                      _buildCategoryButton("Facial Wash"),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
 
@@ -51,19 +92,16 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 SizedBox(
                   height: 220,
-                  child: GridView.builder(
+                  child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1, // 1 row
-                      childAspectRatio: itemWidth / 200, // Dynamic width
-                    ),
                     itemCount: popularProducts.length,
                     itemBuilder: (ctx, index) {
+                      final product = popularProducts[index];
                       return GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/detail', arguments: popularProducts[index]);
+                          Navigator.pushNamed(context, '/detail', arguments: product);
                         },
-                        child: ProductCardWidget(product: popularProducts[index], width: itemWidth),
+                        child: ProductCardWidget(product: product, width: itemWidth),
                       );
                     },
                   ),
@@ -93,7 +131,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildCategoryButton(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(color: Colors.pink[100], borderRadius: BorderRadius.circular(20)),
       child: Text(text, style: const TextStyle(color: Colors.black)),
     );
@@ -112,7 +150,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Responsive Recent Product Card Design
   Widget _buildRecentProductCard(Product product, double screenWidth) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -133,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(Icons.star, color: Colors.yellow, size: 18),
-                    Text(" ${product.rating} [${product.reviewCount} review]"),
+                    Text(" ${product.rating} [${product.reviewCount} reviews]"),
                   ],
                 ),
                 Text("\$${product.price}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
