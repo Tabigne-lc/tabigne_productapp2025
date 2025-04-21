@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'product_card.dart';
 import 'product.dart';
-import 'create_new_product.dart'; // Import new screen
+import 'create_new_product.dart';
+import 'user_preference.dart'; // ✅ Import the user preference screen
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -55,7 +56,10 @@ class HomeScreen extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text("User Preferences"),
               onTap: () {
-                // TODO: Navigate to user preferences screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserPreferencePage()),
+                );
               },
             ),
           ],
@@ -64,14 +68,13 @@ class HomeScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           double screenWidth = constraints.maxWidth;
-          double itemWidth = screenWidth * 0.4; // Adjust card size based on screen width
+          double itemWidth = screenWidth * 0.4;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Category Buttons
                 SizedBox(
                   height: 40,
                   child: ListView(
@@ -86,8 +89,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Popular Products Section
                 _buildSectionTitle("Popular", () {}),
                 const SizedBox(height: 10),
                 SizedBox(
@@ -107,8 +108,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Recent Products Section
                 _buildSectionTitle("Recent Products", () {}),
                 const SizedBox(height: 10),
                 Column(
@@ -160,7 +159,7 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(product.imageUrl, height: screenWidth * 0.2), // Responsive Image
+          Image.asset(product.imageUrl, height: screenWidth * 0.2),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
