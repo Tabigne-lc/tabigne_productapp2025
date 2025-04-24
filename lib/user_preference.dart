@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
 
 class UserPreferencePage extends StatefulWidget {
   @override
@@ -6,8 +8,8 @@ class UserPreferencePage extends StatefulWidget {
 }
 
 class _UserPreferencePageState extends State<UserPreferencePage> {
-  int selectedThemeIndex = 0;
-  String selectedLanguage = 'Filipino';
+  late int selectedThemeIndex;
+  late String selectedLanguage;
 
   final List<Color> themeColors = [
     Color(0xFFD99BA2),
@@ -16,6 +18,14 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
   ];
 
   final List<String> languages = ['Filipino', 'English'];
+
+  @override
+  void initState() {
+    super.initState();
+    final appState = Provider.of<AppState>(context, listen: false);
+    selectedThemeIndex = appState.selectedThemeIndex;
+    selectedLanguage = appState.selectedLanguage;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,40 +63,39 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
               ),
             ),
             SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(themeColors.length, (index) {
-                return Column(
-                  children: [
-                    Container(
-                      height: 100,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Color(0xFFD99BA2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: DropdownButton<int>(
+                value: selectedThemeIndex,
+                dropdownColor: Color(0xFFD99BA2),
+                iconEnabledColor: Colors.white,
+                underline: SizedBox(),
+                isExpanded: true,
+                items: themeColors.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  Color color = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Container(
                       width: 50,
+                      height: 50,
                       decoration: BoxDecoration(
-                        color: themeColors[index],
+                        color: color,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    SizedBox(height: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: themeColors[index],
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          selectedThemeIndex = index;
-                        });
-                      },
-                      child: Text(
-                        selectedThemeIndex == index ? "Current" : "Choose",
-                        style: TextStyle(
-                          color: index == 2 ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              }),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedThemeIndex = value!;
+                  });
+                },
+              ),
             ),
             SizedBox(height: 30),
             Text(
@@ -134,7 +143,11 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 ),
                 onPressed: () {
-                  // Save selectedLanguage and selectedThemeIndex
+                  final appState = Provider.of<AppState>(context, listen: false);
+                  appState.selectedThemeIndex = selectedThemeIndex;
+                  appState.selectedLanguage = selectedLanguage;
+                  appState.notifyListeners();
+                  Navigator.pop(context); // Optional: go back after saving
                 },
                 child: Text(
                   "Save Changes",
