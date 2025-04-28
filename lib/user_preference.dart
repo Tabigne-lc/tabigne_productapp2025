@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'app_state.dart';
+import 'app_state.dart'; // Import the AppState
 
 class UserPreferencePage extends StatefulWidget {
   @override
@@ -8,155 +8,113 @@ class UserPreferencePage extends StatefulWidget {
 }
 
 class _UserPreferencePageState extends State<UserPreferencePage> {
-  late int selectedThemeIndex;
-  late String selectedLanguage;
-
-  final List<Color> themeColors = [
-    Color(0xFFD99BA2),
-    Color(0xFFC3A7E4),
-    Color(0xFF4464AC),
-  ];
-
-  final List<String> languages = ['Filipino', 'English'];
-
-  @override
-  void initState() {
-    super.initState();
-    final appState = Provider.of<AppState>(context, listen: false);
-    selectedThemeIndex = appState.selectedThemeIndex;
-    selectedLanguage = appState.selectedLanguage;
-  }
+  // Variables to store the current selections
+  Color? selectedThemeColor;
+  String? selectedLanguage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF3DCE3),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Theme & Language",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
+        title: Text("User Preferences"),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Choose theme",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Color(0xFFD99BA2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DropdownButton<int>(
-                value: selectedThemeIndex,
-                dropdownColor: Color(0xFFD99BA2),
-                iconEnabledColor: Colors.white,
-                underline: SizedBox(),
-                isExpanded: true,
-                items: themeColors.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  Color color = entry.value;
-                  return DropdownMenuItem<int>(
-                    value: index,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedThemeIndex = value!;
-                  });
-                },
-              ),
-            ),
-            SizedBox(height: 30),
-            Text(
-              "Language",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Color(0xFFD99BA2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DropdownButton<String>(
-                value: selectedLanguage,
-                dropdownColor: Color(0xFFD99BA2),
-                iconEnabledColor: Colors.white,
-                underline: SizedBox(),
-                isExpanded: true,
-                items: languages.map((lang) {
-                  return DropdownMenuItem<String>(
-                    value: lang,
-                    child: Text(
-                      lang,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedLanguage = value!;
-                  });
-                },
-              ),
+            // Theme Selection
+            Text("Select Theme Color", style: TextStyle(fontSize: 18)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedThemeColor = Color(0xFFC3A7E4); // Light Pink
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFC3A7E4), // Light Pink
+                    side: selectedThemeColor == Color(0xFFC3A7E4)
+                        ? BorderSide(color: Colors.black, width: 2) // Highlight border
+                        : BorderSide.none,
+                  ),
+                  child: Text("Color 1"),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedThemeColor = Color(0xFF4464AC); // Blue
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF4464AC), // Blue
+                    side: selectedThemeColor == Color(0xFF4464AC)
+                        ? BorderSide(color: Colors.black, width: 2) // Highlight border
+                        : BorderSide.none,
+                  ),
+                  child: Text("Color 2"),
+                ),
+              ],
             ),
             SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFD99BA2),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                ),
-                onPressed: () {
-                  final appState = Provider.of<AppState>(context, listen: false);
-                  appState.selectedThemeIndex = selectedThemeIndex;
-                  appState.selectedLanguage = selectedLanguage;
-                  appState.notifyListeners();
-                  Navigator.pop(context); // Optional: go back after saving
-                },
-                child: Text(
-                  "Save Changes",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
+
+            // Language Selection (English/Filipino)
+            Text("Select Language", style: TextStyle(fontSize: 18)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedLanguage = "English";
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    side: selectedLanguage == "English"
+                        ? BorderSide(color: Colors.black, width: 2) // Highlight border
+                        : BorderSide.none,
                   ),
+                  child: Text("English"),
                 ),
-              ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedLanguage = "Filipino";
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    side: selectedLanguage == "Filipino"
+                        ? BorderSide(color: Colors.black, width: 2) // Highlight border
+                        : BorderSide.none,
+                  ),
+                  child: Text("Filipino"),
+                ),
+              ],
+            ),
+            SizedBox(height: 40),
+
+            // Save Changes Button
+            ElevatedButton(
+              onPressed: () {
+                if (selectedThemeColor != null && selectedLanguage != null) {
+                  // Save the selected theme color and language to AppState
+                  Provider.of<AppState>(context, listen: false)
+                      .changeThemeColor(selectedThemeColor!);
+                  Provider.of<AppState>(context, listen: false)
+                      .changeLanguage(selectedLanguage!);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Changes saved!")),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please select both theme and language.")),
+                  );
+                }
+              },
+              child: Text("Save Changes"),
             ),
           ],
         ),

@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'product_card.dart';
 import 'product.dart';
 import 'create_new_product.dart';
 import 'user_preference.dart'; // ✅ Import the user preference screen
+import 'app_state.dart'; // Make sure AppState is imported
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Access theme and language settings from AppState
+    final appState = Provider.of<AppState>(context);
+    final themeColor = appState.selectedColor; // Fetch current theme color
+    final language = appState.selectedLanguage; // Fetch current language
+
+    // Translate text based on the selected language
+    String popularText = language == "Filipino" ? "Popular na mga Produkto" : "Popular Products";
+    String recentText = language == "Filipino" ? "Kamakailang Produkto" : "Recent Products";
+    String createProductText = language == "Filipino" ? "Lumikha ng Produkto" : "Create Product";
+    String userPreferencesText = language == "Filipino" ? "Mga Setting ng User" : "User Preferences";
+    
     final List<Product> popularProducts = [
       Product(name: "Body Lotion", price: 29.99, imageUrl: "images/lotion.jpg", rating: 4.9, reviewCount: 278),
       Product(name: "Skin Oil Serum", price: 29.99, imageUrl: "images/serum.jpg", rating: 4.9, reviewCount: 278),
@@ -23,7 +36,8 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Beauty Store"),
+        title: Text("Beauty Store"),
+        backgroundColor: themeColor, // Use the selected theme color
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -31,7 +45,10 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.shopping_bag_outlined), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.shopping_bag_outlined),
+            onPressed: () {},
+          ),
         ],
       ),
       drawer: Drawer(
@@ -44,7 +61,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.add_circle_outline),
-              title: const Text("Create Product"),
+              title: Text(createProductText),
               onTap: () {
                 Navigator.push(
                   context,
@@ -54,7 +71,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text("User Preferences"),
+              title: Text(userPreferencesText),
               onTap: () {
                 Navigator.push(
                   context,
@@ -80,16 +97,16 @@ class HomeScreen extends StatelessWidget {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _buildCategoryButton("Serum"),
+                      _buildCategoryButton("Serum", themeColor),
                       const SizedBox(width: 10),
-                      _buildCategoryButton("Cosmetics"),
+                      _buildCategoryButton("Cosmetics", themeColor),
                       const SizedBox(width: 10),
-                      _buildCategoryButton("Facial Wash"),
+                      _buildCategoryButton("Facial Wash", themeColor),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildSectionTitle("Popular", () {}),
+                _buildSectionTitle(popularText, () {}),
                 const SizedBox(height: 10),
                 SizedBox(
                   height: 220,
@@ -108,7 +125,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildSectionTitle("Recent Products", () {}),
+                _buildSectionTitle(recentText, () {}),
                 const SizedBox(height: 10),
                 Column(
                   children: recentProducts
@@ -116,7 +133,7 @@ class HomeScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.pushNamed(context, '/detail', arguments: product);
                             },
-                            child: _buildRecentProductCard(product, screenWidth),
+                            child: _buildRecentProductCard(product, screenWidth, themeColor),
                           ))
                       .toList(),
                 ),
@@ -128,10 +145,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryButton(String text) {
+  Widget _buildCategoryButton(String text, Color themeColor) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(color: Colors.pink[100], borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: themeColor, borderRadius: BorderRadius.circular(20)),
       child: Text(text, style: const TextStyle(color: Colors.black)),
     );
   }
@@ -140,7 +158,8 @@ class HomeScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         TextButton(
           onPressed: onTap,
           child: const Text("See all", style: TextStyle(color: Colors.pink)),
@@ -149,12 +168,12 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentProductCard(Product product, double screenWidth) {
+  Widget _buildRecentProductCard(Product product, double screenWidth, Color themeColor) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.purple[100],
+        color: themeColor.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -165,14 +184,16 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(product.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(product.name,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Row(
                   children: [
                     const Icon(Icons.star, color: Colors.yellow, size: 18),
                     Text(" ${product.rating} [${product.reviewCount} reviews]"),
                   ],
                 ),
-                Text("\$${product.price}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text("\$${product.price}",
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
           ),

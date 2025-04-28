@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 
-class AppState extends ChangeNotifier {
-  int selectedThemeIndex = 0;
-  String selectedLanguage = 'Filipino';
+class AppState with ChangeNotifier {
+  // Default theme color (first color choice)
+  Color _selectedColor = Color(0xFFC3A7E4);
 
-  final List<Color> themeColors = [
-    Color(0xFFD99BA2),
-    Color(0xFFC3A7E4),
-    Color(0xFF4464AC),
-  ];
+  Color get selectedColor => _selectedColor;
 
-  // Update theme based on index selected in the dropdown
-  void updateTheme(int index) {
-    selectedThemeIndex = index;
+  // Change color theme
+  void changeThemeColor(Color color) {
+    _selectedColor = color;
     notifyListeners();
   }
 
-  // Update language based on user selection
-  void updateLanguage(String language) {
-    selectedLanguage = language;
+  // Default language (English)
+  String _selectedLanguage = 'English';
+
+  String get selectedLanguage => _selectedLanguage;
+
+  // Change language
+  void changeLanguage(String language) {
+    _selectedLanguage = language;
     notifyListeners();
   }
 }
