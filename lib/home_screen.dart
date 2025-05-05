@@ -3,25 +3,27 @@ import 'package:provider/provider.dart';
 import 'product_card.dart';
 import 'product.dart';
 import 'create_new_product.dart';
-import 'user_preference.dart'; // ✅ Import the user preference screen
-import 'app_state.dart'; // Make sure AppState is imported
+import 'user_preference.dart';
+import 'background_model.dart';
+import 'language_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Access theme and language settings from AppState
-    final appState = Provider.of<AppState>(context);
-    final themeColor = appState.selectedColor; // Fetch current theme color
-    final language = appState.selectedLanguage; // Fetch current language
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
+    final languageModel = Provider.of<LanguageModel>(context);
 
-    // Translate text based on the selected language
-    String popularText = language == "Filipino" ? "Popular na mga Produkto" : "Popular Products";
-    String recentText = language == "Filipino" ? "Kamakailang Produkto" : "Recent Products";
-    String createProductText = language == "Filipino" ? "Lumikha ng Produkto" : "Create Product";
-    String userPreferencesText = language == "Filipino" ? "Mga Setting ng User" : "User Preferences";
-    
+    final themeColor = backgroundModel.accent;
+
+    final bool isFilipino = languageModel.isFilipino();
+
+    final String popularText = isFilipino ? "Popular na mga Produkto" : "Popular Products";
+    final String recentText = isFilipino ? "Kamakailang Produkto" : "Recent Products";
+    final String createProductText = isFilipino ? "Lumikha ng Produkto" : "Create Product";
+    final String userPreferencesText = isFilipino ? "Mga Setting ng User" : "User Preferences";
+
     final List<Product> popularProducts = [
       Product(name: "Body Lotion", price: 29.99, imageUrl: "images/lotion.jpg", rating: 4.9, reviewCount: 278),
       Product(name: "Skin Oil Serum", price: 29.99, imageUrl: "images/serum.jpg", rating: 4.9, reviewCount: 278),
@@ -35,9 +37,10 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+      backgroundColor: backgroundModel.background,
       appBar: AppBar(
-        title: Text("Beauty Store"),
-        backgroundColor: themeColor, // Use the selected theme color
+        title: const Text("Beauty Store"),
+        backgroundColor: backgroundModel.appBar,
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -55,28 +58,22 @@ class HomeScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Color.fromARGB(255, 216, 160, 226)),
-              child: Text("Menu", style: TextStyle(color: Colors.white, fontSize: 24)),
+            DrawerHeader(
+              decoration: BoxDecoration(color: backgroundModel.drawerHeader),
+              child: const Text("Menu", style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
               leading: const Icon(Icons.add_circle_outline),
               title: Text(createProductText),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CreateProductScreen()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateProductScreen()));
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: Text(userPreferencesText),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserPreferencePage()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => UserPreferencePage()));
               },
             ),
           ],
@@ -97,11 +94,11 @@ class HomeScreen extends StatelessWidget {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _buildCategoryButton("Serum", themeColor),
+                      _buildCategoryButton("Serum", backgroundModel.button),
                       const SizedBox(width: 10),
-                      _buildCategoryButton("Cosmetics", themeColor),
+                      _buildCategoryButton("Cosmetics", backgroundModel.button),
                       const SizedBox(width: 10),
-                      _buildCategoryButton("Facial Wash", themeColor),
+                      _buildCategoryButton("Facial Wash", backgroundModel.button),
                     ],
                   ),
                 ),
@@ -116,9 +113,7 @@ class HomeScreen extends StatelessWidget {
                     itemBuilder: (ctx, index) {
                       final product = popularProducts[index];
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/detail', arguments: product);
-                        },
+                        onTap: () => Navigator.pushNamed(context, '/detail', arguments: product),
                         child: ProductCardWidget(product: product, width: itemWidth),
                       );
                     },
@@ -130,10 +125,8 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: recentProducts
                       .map((product) => GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/detail', arguments: product);
-                            },
-                            child: _buildRecentProductCard(product, screenWidth, themeColor),
+                            onTap: () => Navigator.pushNamed(context, '/detail', arguments: product),
+                            child: _buildRecentProductCard(product, screenWidth, backgroundModel),
                           ))
                       .toList(),
                 ),
@@ -145,11 +138,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryButton(String text, Color themeColor) {
+  Widget _buildCategoryButton(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-          color: themeColor, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
       child: Text(text, style: const TextStyle(color: Colors.black)),
     );
   }
@@ -158,22 +150,20 @@ class HomeScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        TextButton(
-          onPressed: onTap,
-          child: const Text("See all", style: TextStyle(color: Colors.pink)),
-        ),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+       
+        
+        
       ],
     );
   }
 
-  Widget _buildRecentProductCard(Product product, double screenWidth, Color themeColor) {
+  Widget _buildRecentProductCard(Product product, double screenWidth, Backgroundmodel backgroundModel) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: themeColor.withOpacity(0.2),
+        color: backgroundModel.accent.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -188,7 +178,7 @@ class HomeScreen extends StatelessWidget {
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Row(
                   children: [
-                    const Icon(Icons.star, color: Colors.yellow, size: 18),
+                    Icon(Icons.star, color: backgroundModel.ratingColor, size: 18),
                     Text(" ${product.rating} [${product.reviewCount} reviews]"),
                   ],
                 ),

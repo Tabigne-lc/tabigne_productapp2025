@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'background_model.dart';
+import 'language_model.dart';
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 

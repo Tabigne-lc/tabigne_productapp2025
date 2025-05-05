@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'app_state.dart';
-import 'log_in.dart'; // Assuming your login screen is named `log_in.dart`
-import 'user_preference.dart'; // Assuming user preferences screen
-import 'home_screen.dart'; // Your HomeScreen widget
-import 'sign_up_screen.dart'; // Your SignUpScreen widget
-import 'detail_screen.dart'; // Your DetailScreen widget for product details
+import 'background_model.dart';
+import 'language_model.dart';
+import 'log_in.dart';
+import 'user_preference.dart';
+import 'home_screen.dart';
+import 'sign_up_screen.dart';
+import 'detail_screen.dart';
 
 void main() {
-  runApp(MyApp()); // No need for `const` here
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,22 +17,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Backgroundmodel()),
+        ChangeNotifierProvider(create: (_) => LanguageModel()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Shopaholic App', // Set the app title
+        title: 'Shopaholic App',
         theme: ThemeData(
           primarySwatch: Colors.pink,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        initialRoute: '/login', // Initial screen on launch
+        initialRoute: '/login',
         routes: {
-          '/login': (context) => LoginScreen(), // No `const` here
-          '/signUp': (context) => SignUpScreen(), // No `const` here
-          '/home': (context) => HomeScreen(), // No `const` here
-          '/preferences': (context) => UserPreferencePage(), // No `const` here
-          '/detail': (context) => DetailScreen(), // No `const` here
+          '/login': (context) => LoginScreen(),
+          '/signUp': (context) => SignUpScreen(),
+          '/home': (context) => HomeScreen(),
+          '/preferences': (context) => UserPreferencePage(),
+          '/detail': (context) => DetailScreen(),
         },
       ),
     );

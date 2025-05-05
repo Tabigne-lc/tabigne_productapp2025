@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'language_model.dart';
 
 class CreateProductScreen extends StatefulWidget {
   const CreateProductScreen({super.key});
@@ -17,9 +19,12 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageModel = Provider.of<LanguageModel>(context);
+    final isFilipino = languageModel.isFilipino();  // Check if the selected language is Filipino
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create New Product"),
+        title: Text(isFilipino ? "Lumikha ng Bagong Produkto" : "Create New Product"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -30,37 +35,37 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Product Name"),
+            Text(isFilipino ? "Pangalan ng Produkto" : "Product Name"),
             TextField(
               controller: _nameController,
-              decoration: _inputDecoration(),
+              decoration: _inputDecoration(hintText: isFilipino ? "Ilagay ang pangalan ng produkto" : "Enter product name"),
             ),
             const SizedBox(height: 16),
 
-            const Text("Product Description"),
+            Text(isFilipino ? "Paglalarawan ng Produkto" : "Product Description"),
             TextField(
               controller: _descriptionController,
               maxLines: 3,
-              decoration: _inputDecoration(),
+              decoration: _inputDecoration(hintText: isFilipino ? "Ilagay ang paglalarawan ng produkto" : "Enter product description"),
             ),
             const SizedBox(height: 16),
 
-            const Text("Price"),
+            Text(isFilipino ? "Presyo" : "Price"),
             TextField(
               controller: _priceController,
               keyboardType: TextInputType.number,
-              decoration: _inputDecoration(),
+              decoration: _inputDecoration(hintText: isFilipino ? "Ilagay ang presyo" : "Enter price"),
             ),
             const SizedBox(height: 16),
 
-            const Text("Category"),
+            Text(isFilipino ? "Kategorya" : "Category"),
             DropdownButtonFormField<String>(
               value: _selectedCategory,
-              decoration: _inputDecoration(),
+              decoration: _inputDecoration(hintText: isFilipino ? "Pumili ng kategorya" : "Select a category"),
               items: _categories.map((category) {
                 return DropdownMenuItem(
                   value: category,
-                  child: Text(category),
+                  child: Text(isFilipino ? category : category),
                 );
               }).toList(),
               onChanged: (value) {
@@ -78,7 +83,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                   backgroundColor: Colors.pink[200],
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 ),
-                child: const Text("Create Product", style: TextStyle(color: Colors.black, fontSize: 16)),
+                child: Text(isFilipino ? "Lumikha ng Produkto" : "Create Product", style: const TextStyle(color: Colors.black, fontSize: 16)),
               ),
             ),
           ],
@@ -92,8 +97,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     print("Product Created: ${_nameController.text}, Category: $_selectedCategory");
   }
 
-  InputDecoration _inputDecoration() {
+  InputDecoration _inputDecoration({required String hintText}) {
     return InputDecoration(
+      hintText: hintText, // Placeholder text
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.purple.shade200)),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.purple)),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.purple.shade200)),

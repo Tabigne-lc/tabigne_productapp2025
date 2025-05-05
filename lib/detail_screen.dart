@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'product.dart';
+import 'background_model.dart';
+import 'language_model.dart';
 
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key});
@@ -7,10 +10,12 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = ModalRoute.of(context)!.settings.arguments as Product;
+    final languageModel = Provider.of<LanguageModel>(context);
+    final isFilipino = languageModel.isFilipino();  // Check if the language is Filipino
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Details"),
+        title: Text(isFilipino ? "Detalye ng Produkto" : "Details"),
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
         actions: [IconButton(icon: const Icon(Icons.favorite_border), onPressed: () {})],
       ),
@@ -41,13 +46,21 @@ class DetailScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                const Text("This is a premium skincare product to enhance your beauty!", style: TextStyle(color: Colors.black54)),
+                Text(
+                  isFilipino 
+                  ? "Ito ay isang premium na produkto sa skincare para mapaganda ang iyong kutis!" 
+                  : "This is a premium skincare product to enhance your beauty!",
+                  style: const TextStyle(color: Colors.black54),
+                ),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.pink[300]),
                     onPressed: () {},
-                    child: const Text("Shop Now", style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      isFilipino ? "Mamili Ngayon" : "Shop Now", 
+                      style: const TextStyle(color: Colors.white)
+                    ),
                   ),
                 ),
               ],
