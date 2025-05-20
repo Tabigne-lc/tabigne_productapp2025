@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'product_card.dart';
 import 'product.dart';
-import 'create_new_product.dart';
+import 'create_new_product.dart'; // Corrected import for CreateNewProduct
 import 'user_preference.dart';
-import 'background_model.dart';
-import 'language_model.dart';
+import 'editproduct_screen.dart';  // Import for EditProductScreen
+import 'myproduct_screen.dart';   // Import for MyProductsScreen
+import '/models/background_model.dart';
+import '/models/language_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,25 +18,29 @@ class HomeScreen extends StatelessWidget {
     final languageModel = Provider.of<LanguageModel>(context);
 
     final themeColor = backgroundModel.accent;
-
     final bool isFilipino = languageModel.isFilipino();
 
     final String popularText = isFilipino ? "Popular na mga Produkto" : "Popular Products";
     final String recentText = isFilipino ? "Kamakailang Produkto" : "Recent Products";
     final String createProductText = isFilipino ? "Lumikha ng Produkto" : "Create Product";
     final String userPreferencesText = isFilipino ? "Mga Setting ng User" : "User Preferences";
+    final String myProductsText = isFilipino ? "Aking mga Produkto" : "My Products";
+    final String editProductText = isFilipino ? "I-edit ang Produkto" : "Edit Product";
 
+    // Replace with dynamic data or API call
     final List<Product> popularProducts = [
-      Product(name: "Body Lotion", price: 29.99, imageUrl: "images/lotion.jpg", rating: 4.9, reviewCount: 278),
-      Product(name: "Skin Oil Serum", price: 29.99, imageUrl: "images/serum.jpg", rating: 4.9, reviewCount: 278),
-      Product(name: "TRESemme Shampoo", price: 29.99, imageUrl: "images/treseme.jpg", rating: 4.9, reviewCount: 278),
+      Product(id: 1, name: "Body Lotion", description: "A nourishing body lotion", price: 29.99, categoryId: 1, userId: 1, imagePath: "images/lotion.jpg"),
+      Product(id: 2, name: "Skin Oil Serum", description: "A hydrating skin oil serum", price: 29.99, categoryId: 1, userId: 1, imagePath: "images/serum.jpg"),
+      Product(id: 3, name: "TRESemme Shampoo", description: "A refreshing shampoo", price: 29.99, categoryId: 2, userId: 1, imagePath: "images/treseme.jpg"),
     ];
 
     final List<Product> recentProducts = [
-      Product(name: "Natural Argan Oil", price: 49.99, imageUrl: "images/argan_oil.jpg", rating: 4.9, reviewCount: 278),
-      Product(name: "Natural Lip Oil", price: 49.99, imageUrl: "images/lip_oil.jpeg", rating: 4.9, reviewCount: 289),
-      Product(name: "TRESemme Shampoo", price: 49.99, imageUrl: "images/treseme.jpg", rating: 4.9, reviewCount: 289),
+      Product(id: 4, name: "Natural Argan Oil", description: "Pure natural argan oil", price: 49.99, categoryId: 3, userId: 1, imagePath: "images/argan_oil.jpg"),
+      Product(id: 5, name: "Natural Lip Oil", description: "Moisturizing lip oil", price: 49.99, categoryId: 3, userId: 1, imagePath: "images/lip_oil.jpeg"),
+      Product(id: 6, name: "TRESemme Shampoo", description: "Refreshing shampoo for hair", price: 49.99, categoryId: 2, userId: 1, imagePath: "images/treseme.jpg"),
     ];
+
+    final int userId = 1; // Replace with dynamic user ID or from your authentication provider
 
     return Scaffold(
       backgroundColor: backgroundModel.background,
@@ -62,20 +68,20 @@ class HomeScreen extends StatelessWidget {
               decoration: BoxDecoration(color: backgroundModel.drawerHeader),
               child: const Text("Menu", style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: Text(createProductText),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateProductScreen()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(userPreferencesText),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => UserPreferencePage()));
-              },
-            ),
+            _buildDrawerListTile(context, createProductText, Icons.add_circle_outline, () {
+              // Corrected navigation to CreateNewProductScreen
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateNewProduct()));
+            }),
+            _buildDrawerListTile(context, editProductText, Icons.edit, () {
+              // Navigate to EditProductScreen (example with a popular product)
+              Navigator.push(context, MaterialPageRoute(builder: (context) => EditProductScreen(product: popularProducts[0])));
+            }),
+            _buildDrawerListTile(context, userPreferencesText, Icons.settings, () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserPreferencePage()));
+            }),
+            _buildDrawerListTile(context, myProductsText, Icons.list, () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => MyProductsScreen(userId: userId)));
+            }),
           ],
         ),
       ),
@@ -111,11 +117,7 @@ class HomeScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: popularProducts.length,
                     itemBuilder: (ctx, index) {
-                      final product = popularProducts[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.pushNamed(context, '/detail', arguments: product),
-                        child: ProductCardWidget(product: product, width: itemWidth),
-                      );
+                      return _buildProductCard(popularProducts[index], itemWidth, context);
                     },
                   ),
                 ),
@@ -124,10 +126,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Column(
                   children: recentProducts
-                      .map((product) => GestureDetector(
-                            onTap: () => Navigator.pushNamed(context, '/detail', arguments: product),
-                            child: _buildRecentProductCard(product, screenWidth, backgroundModel),
-                          ))
+                      .map((product) => _buildProductCard(product, screenWidth * 0.9, context))
                       .toList(),
                 ),
               ],
@@ -138,11 +137,23 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildProductCard(Product product, double itemWidth, BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditProductScreen(product: product),
+        ),
+      ),
+      child: ProductCardWidget(product: product, width: itemWidth),
+    );
+  }
+
   Widget _buildCategoryButton(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
-      child: Text(text, style: const TextStyle(color: Colors.black)),
+      child: Center(child: Text(text, style: const TextStyle(color: Colors.black))),
     );
   }
 
@@ -151,45 +162,20 @@ class HomeScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-       
-        
-        
       ],
     );
   }
 
-  Widget _buildRecentProductCard(Product product, double screenWidth, Backgroundmodel backgroundModel) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: backgroundModel.accent.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Image.asset(product.imageUrl, height: screenWidth * 0.2),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(product.name,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: backgroundModel.ratingColor, size: 18),
-                    Text(" ${product.rating} [${product.reviewCount} reviews]"),
-                  ],
-                ),
-                Text("\$${product.price}",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-          IconButton(icon: const Icon(Icons.favorite_border), onPressed: () {}),
-        ],
-      ),
+  Widget _buildDrawerListTile(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap,
     );
   }
 }

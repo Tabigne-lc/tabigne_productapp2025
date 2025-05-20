@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'background_model.dart';
-import 'language_model.dart';
+import '/models/background_model.dart';
+import '/models/language_model.dart';
 import 'log_in.dart';
 import 'user_preference.dart';
 import 'home_screen.dart';
-import 'sign_up_screen.dart';
+
 import 'detail_screen.dart';
 
 void main() {
@@ -32,7 +32,6 @@ class MyApp extends StatelessWidget {
         initialRoute: '/login',
         routes: {
           '/login': (context) => LoginScreen(),
-          '/signUp': (context) => SignUpScreen(),
           '/home': (context) => HomeScreen(),
           '/preferences': (context) => UserPreferencePage(),
           '/detail': (context) => DetailScreen(),

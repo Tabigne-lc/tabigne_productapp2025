@@ -35,42 +35,47 @@ class ProductCardWidget extends StatelessWidget {
             // Product Image
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                product.imageUrl,
-                height: width * 0.6,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child: product.imagePath != null
+                  ? Image.network(
+                      product.imagePath!,
+                      height: width * 0.6,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/placeholder.png', // Fallback image in case of error
+                          height: width * 0.6,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      'assets/placeholder.png', // Default placeholder if no image path
+                      height: width * 0.6,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(height: 8),
 
             // Product Name
             Text(
               product.name,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
 
-            // Product Price & Rating
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "\$${product.price}",
-                  style: const TextStyle(color: Colors.pinkAccent, fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.yellow, size: 14),
-                    Text(
-                      " ${product.rating}",
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
+            // Product Price
+            Text(
+              "\$${product.price}",
+              style: const TextStyle(
+                color: Colors.pinkAccent,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
