@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'product.dart';
 import 'models/background_model.dart';
 import '/models/language_model.dart';
-
+//testing
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key});
 
