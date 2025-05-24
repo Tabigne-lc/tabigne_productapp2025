@@ -3,7 +3,7 @@ import 'models/language_model.dart';
 import 'models/background_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 import 'category_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -91,7 +91,6 @@ class _AddProductScreenState extends State<CreateNewProduct> {
   void loadCategories() async {
     try {
       categories = await CategoryService.getCategories();
-    } catch (e) {
     } finally {
       setState(() {
         isLoadingCategories = false;
@@ -259,7 +258,6 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                               content: Text(isFilipino
                                   ? "Matagumpay na naidagdag ang produkto!"
                                   : "Product added successfully!")),
-
                         );
 
                         Navigator.pop(context);

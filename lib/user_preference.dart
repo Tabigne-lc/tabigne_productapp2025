@@ -4,6 +4,8 @@ import '/models/background_model.dart';
 import '/models/language_model.dart';
 
 class UserPreferencePage extends StatefulWidget {
+  const UserPreferencePage({super.key});
+
   @override
   _UserPreferencePageState createState() => _UserPreferencePageState();
 }
@@ -16,15 +18,20 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
-    final isFilipino = languageModel.isFilipino(); // Make sure this returns a bool
+    final isFilipino =
+        languageModel.isFilipino(); // Make sure this returns a bool
 
     // Translation strings for Filipino and English
     final titleText = isFilipino ? "Mga Kagustuhan" : "User Preferences";
-    final selectThemeText = isFilipino ? "Piliin ang Tema" : "Select Theme Color";
-    final selectLanguageText = isFilipino ? "Piliin ang Wika" : "Select Language";
-    final saveChangesText = isFilipino ? "I-save ang mga pagbabago" : "Save Changes";
-    final missingSelectionText =
-        isFilipino ? "Pumili ng parehas na tema at wika." : "Please select both theme and language.";
+    final selectThemeText =
+        isFilipino ? "Piliin ang Tema" : "Select Theme Color";
+    final selectLanguageText =
+        isFilipino ? "Piliin ang Wika" : "Select Language";
+    final saveChangesText =
+        isFilipino ? "I-save ang mga pagbabago" : "Save Changes";
+    final missingSelectionText = isFilipino
+        ? "Pumili ng parehas na tema at wika."
+        : "Please select both theme and language.";
     final color1Label = isFilipino ? "Kulay 1" : "Color 1";
     final color2Label = isFilipino ? "Kulay 2" : "Color 2";
 
@@ -62,7 +69,8 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
             const SizedBox(height: 40),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 backgroundColor: backgroundModel.buyBtn,
               ),
               onPressed: () {
@@ -79,7 +87,8 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
 
                   // Delay to allow state update before checking new language
                   Future.delayed(Duration.zero, () {
-                    final updatedLang = Provider.of<LanguageModel>(context, listen: false);
+                    final updatedLang =
+                        Provider.of<LanguageModel>(context, listen: false);
                     final confirmationText = updatedLang.isFilipino()
                         ? "Mga pagbabago ay na-save!"
                         : "Changes saved!";

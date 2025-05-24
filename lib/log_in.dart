@@ -32,8 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
       TextEditingController();
 
   Future<void> _login() async {
-    final url = Uri.parse(
-        '${AppConfig.baseUrl}/api/auth/login'); // Use your actual base URL
+    final url = Uri.parse('${AppConfig.baseUrl}/api/auth/login');
 
     setState(() {
       isLoading = true;
@@ -45,8 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'username': _loginUsernameController
-              .text, // Previously: _loginEmailController
+          'username': _loginUsernameController.text,
           'password': _loginPasswordController.text,
         }),
       );
@@ -58,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final email = responseData['user']['email'];
 
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('user_id', userId);
+        await prefs.setInt('user_id', userId); // Save userId for later use
         await prefs.setString('user_name', username ?? 'User Name');
         await prefs.setString('user_email', email ?? 'user@example.com');
 
@@ -73,46 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       setState(() {
         errorMessage = 'Connection error. Please try again.';
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _signUp() async {
-    final url = Uri.parse('${AppConfig.baseUrl}/api/auth/register');
-
-    setState(() {
-      isLoading = true;
-      errorMessage = '';
-    });
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': _signUpNameController.text,
-          'email': _signUpEmailController.text,
-          'password': _signUpPasswordController.text,
-          'confirmPassword': _signUpConfirmPasswordController.text,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        final data = jsonDecode(response.body);
-        setState(() {
-          errorMessage = data['message'] ?? 'Sign up failed';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'An error occurred. Please try again.';
       });
     } finally {
       setState(() {
@@ -162,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 40),
             if (_isLoginMode) ...[
-             _buildTextField('Username', _loginUsernameController),
+              _buildTextField('Username', _loginUsernameController),
               const SizedBox(height: 20),
               _buildTextField('Password', _loginPasswordController,
                   obscureText: true),
@@ -222,7 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: isLoading ? null : _signUp,
+                  onPressed: () {
+                    // Handle sign up logic here
+                  },
                   child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text("Sign Up", style: TextStyle(fontSize: 18)),

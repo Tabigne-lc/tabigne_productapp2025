@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,7 +10,7 @@ import 'config.dart';
 class EditProductScreen extends StatefulWidget {
   final Product product;
 
-  const EditProductScreen({Key? key, required this.product}) : super(key: key);
+  const EditProductScreen({super.key, required this.product});
 
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
