@@ -6,6 +6,7 @@ import 'product_card.dart';
 import '/models/background_model.dart';
 import '/models/language_model.dart';
 import 'package:provider/provider.dart';
+import 'config.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final int initialCategoryId;

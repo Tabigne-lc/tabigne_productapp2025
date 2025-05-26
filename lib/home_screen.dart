@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildSectionTitle('Best Sellers', () {}),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 220,
+                      height: 240, // Increased from 220 to prevent overflow
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: bestSellers.length,
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildSectionTitle('New Arrivals', () {}),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 220,
+                      height: 240, // Increased from 220 to prevent overflow
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: newArrivals.length,
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildSectionTitle('Featured', () {}),
                     const SizedBox(height: 10),
                     SizedBox(
-                      height: 220,
+                      height: 240, // Increased from 220 to prevent overflow
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: featured.length,

@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   String errorMessage = '';
   bool _isLoginMode = true; // toggle between login and signup mode
+  bool _isPasswordVisible = false;
 
   // Login Controllers
   final TextEditingController _loginUsernameController =
@@ -80,10 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildTextField(String label, TextEditingController controller,
-      {bool obscureText = false}) {
+      {bool obscureText = false, bool isPassword = false}) {
     return TextField(
       controller: controller,
-      obscureText: obscureText,
+      obscureText: isPassword ? !_isPasswordVisible : obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -96,6 +97,19 @@ class _LoginScreenState extends State<LoginScreen> {
           borderSide: const BorderSide(color: Colors.pinkAccent, width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              )
+            : null,
       ),
     );
   }
@@ -123,41 +137,31 @@ class _LoginScreenState extends State<LoginScreen> {
               _buildTextField('Username', _loginUsernameController),
               const SizedBox(height: 20),
               _buildTextField('Password', _loginPasswordController,
-                  obscureText: true),
+                  obscureText: true, isPassword: true),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Checkbox(
-                      value: false,
-                      onChanged: (value) {},
-                      activeColor: Colors.pinkAccent),
-                  const Text('Remember me',
-                      style: TextStyle(color: Colors.white)),
-                ],
-              ),
+              // Removed Remember me, replaced with show password toggle
               if (errorMessage.isNotEmpty) ...[
                 Text(errorMessage, style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 10),
               ],
               ElevatedButton(
-                onPressed: isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pinkAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  onPressed: isLoading ? null : _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Log In',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white),
-                      ),
-              ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Log In',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        )),
             ] else ...[
               _buildTextField('Name', _signUpNameController),
               const SizedBox(height: 10),

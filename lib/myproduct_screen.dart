@@ -27,7 +27,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   }
 
   Future<void> _fetchProducts() async {
-    final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/products/${widget.userId}'));
+    final response = await http
+        .get(Uri.parse('${AppConfig.baseUrl}/api/products/${widget.userId}'));
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
       // Always treat as a list of products (API returns {data: [...]})
@@ -96,7 +97,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Products', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('My Products',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: backgroundModel.appBar,
         elevation: 2,
         actions: [
@@ -136,7 +138,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                     color: isSelected ? Colors.pink[50] : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: isSelected ? Colors.pinkAccent : Colors.grey[300]!,
+                        color:
+                            isSelected ? Colors.pinkAccent : Colors.grey[300]!,
                         width: isSelected ? 2 : 1),
                     boxShadow: [
                       BoxShadow(
@@ -151,20 +154,50 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 16),
-                    leading: Checkbox(
-                      value: isSelected,
-                      activeColor: Colors.pinkAccent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      onChanged: (bool? selected) {
-                        setState(() {
-                          if (selected == true) {
-                            _selectedProductIds.add(product.id);
-                          } else {
-                            _selectedProductIds.remove(product.id);
-                          }
-                        });
-                      },
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if ((product.imagePath ?? '').isNotEmpty)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              '${AppConfig.baseUrl}/storage/${product.imagePath}',
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image,
+                                      size: 40, color: Colors.grey),
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.image,
+                                color: Colors.grey, size: 32),
+                          ),
+                        const SizedBox(width: 8),
+                        Checkbox(
+                          value: isSelected,
+                          activeColor: Colors.pinkAccent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                          onChanged: (bool? selected) {
+                            setState(() {
+                              if (selected == true) {
+                                _selectedProductIds.add(product.id);
+                              } else {
+                                _selectedProductIds.remove(product.id);
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     title: Text(
                       product.name,
@@ -193,7 +226,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EditProductScreen(product: product),
+                            builder: (context) =>
+                                EditProductScreen(product: product),
                           ),
                         ).then((_) => _fetchProducts());
                       },
@@ -203,14 +237,17 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Delete Product'),
-                          content: Text('Are you sure you want to delete "${product.name}"?'),
+                          content: Text(
+                              'Are you sure you want to delete "${product.name}"?'),
                           actions: [
                             TextButton(
                                 onPressed: () => Navigator.pop(context, false),
                                 child: const Text('No')),
                             TextButton(
                                 onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Yes', style: TextStyle(color: Colors.pinkAccent))),
+                                child: const Text('Yes',
+                                    style:
+                                        TextStyle(color: Colors.pinkAccent))),
                           ],
                         ),
                       );

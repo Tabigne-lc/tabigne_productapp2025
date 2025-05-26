@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'product.dart';
+import 'config.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final Product product;
   final double width;
 
-  const ProductCardWidget({super.key, required this.product, required this.width});
+  const ProductCardWidget(
+      {super.key, required this.product, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -35,27 +37,29 @@ class ProductCardWidget extends StatelessWidget {
             // Product Image
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: product.imagePath != null
-                  ? Image.network(
-                      product.imagePath!,
-                      height: width * 0.6,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/placeholder.png', // Fallback image in case of error
-                          height: width * 0.6,
+              child:
+                  (product.imagePath != null && product.imagePath!.isNotEmpty)
+                      ? Image.network(
+                          // Build the full image URL from AppConfig.baseUrl
+                          '${AppConfig.baseUrl}/storage/${product.imagePath}',
+                          height: width * 0.55, // Reduce image height
                           width: double.infinity,
                           fit: BoxFit.cover,
-                        );
-                      },
-                    )
-                  : Image.asset(
-                      'assets/placeholder.png', // Default placeholder if no image path
-                      height: width * 0.6,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/placeholder.png',
+                              height: width * 0.55,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          'assets/placeholder.png',
+                          height: width * 0.55,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
             ),
             const SizedBox(height: 8),
 

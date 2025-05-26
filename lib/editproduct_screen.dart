@@ -130,11 +130,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       height: 120, width: 120, fit: BoxFit.cover)
                   : (_currentImagePath != null && _currentImagePath!.isNotEmpty)
                       ? Image.network(
-                          'http://192.168.145.203:8000/storage/$_currentImagePath',
+                          '${AppConfig.baseUrl}/storage/$_currentImagePath',
                           height: 120,
                           width: 120,
                           fit: BoxFit.cover)
-                      : Image.asset('assets/product_placeholder.png',
+                      : Image.asset('assets/placeholder.png',
                           height: 120, width: 120, fit: BoxFit.cover),
             ),
             TextButton(
