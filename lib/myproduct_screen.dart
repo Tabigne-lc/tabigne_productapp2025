@@ -76,8 +76,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ),
     );
     if (confirm == true) {
-      // Delete each selected product
-      for (var id in _selectedProductIds) {
+      // Delete each selected product (avoid concurrent modification)
+      final idsToDelete = List<int>.from(_selectedProductIds);
+      for (var id in idsToDelete) {
         await _deleteProduct(id);
       }
     }

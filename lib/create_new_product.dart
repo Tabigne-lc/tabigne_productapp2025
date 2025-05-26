@@ -294,4 +294,26 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                         Navigator.pop(context); // Go back after adding
                       } catch (e) {
                         // Handle failure
-                        ScaffoldMessenger.of(context).show
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(isFilipino
+                                  ? "Nangyaring magkamali, pakisubukang muli."
+                                  : "An error occurred, please try again.")),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.pinkAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(isFilipino ? "Idagdag" : "Add"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
