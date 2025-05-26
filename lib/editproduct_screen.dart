@@ -30,22 +30,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize text controllers with existing product data
     _nameController = TextEditingController(text: widget.product.name);
     _descriptionController =
         TextEditingController(text: widget.product.description);
     _priceController =
         TextEditingController(text: widget.product.price.toString());
+
+    // Save current image path for preview
     _currentImagePath = widget.product.imagePath ?? '';
+
+    // Load categories from API
     _loadCategories();
   }
 
   void _loadCategories() async {
     try {
+      // Fetch category list from CategoryService
       _categories = await CategoryService.getCategories();
+
+      // Set current product category as the selected one
       _selectedCategoryId = widget.product.categoryId.toString();
     } catch (e) {
-      // Handle error if needed
+      // You can log or handle errors here
     } finally {
+      // Stop showing loading indicator
       setState(() {
         _isLoadingCategories = false;
       });
@@ -54,13 +64,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Future<void> _pickImage() async {
     if (_isPickingImage) return;
+
     setState(() {
       _isPickingImage = true;
     });
+
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
+        // Save picked image to display and upload
         setState(() {
           _pickedImage = File(pickedFile.path);
         });
@@ -74,27 +87,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Future<void> _updateProduct() async {
     if (_pickedImage != null) {
-      // Send as multipart
+      // If a new image is selected, use MultipartRequest to upload both image and text fields
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
             '${AppConfig.baseUrl}/api/products/${widget.product.id}?_method=PUT'),
       );
+
+      // Add form fields
       request.fields['name'] = _nameController.text;
       request.fields['description'] = _descriptionController.text;
       request.fields['price'] = _priceController.text;
       request.fields['category_id'] = _selectedCategoryId!;
+
+      // Attach the picked image file
       request.files
           .add(await http.MultipartFile.fromPath('image', _pickedImage!.path));
+
+      // Send request and wait for response
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
+
+      // If successful, go back to previous screen
       if (response.statusCode == 200) {
         Navigator.pop(context);
       } else {
-        // Handle error
+        // You can show an error message here
       }
     } else {
-      // No new image, send as JSON
+      // If no new image is selected, update product using regular PUT request with JSON body
       final response = await http.put(
         Uri.parse('${AppConfig.baseUrl}/api/products/${widget.product.id}'),
         headers: {'Content-Type': 'application/json'},
@@ -105,10 +126,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'category_id': int.parse(_selectedCategoryId!),
         }),
       );
+
       if (response.statusCode == 200) {
         Navigator.pop(context);
       } else {
-        // Handle error
+        // Handle error here if needed
       }
     }
   }
@@ -123,6 +145,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Show the picked image if available, otherwise show existing product image or placeholder
             GestureDetector(
               onTap: _pickImage,
               child: _pickedImage != null
@@ -141,17 +164,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
               onPressed: _pickImage,
               child: Text('Change Image'),
             ),
+
+            // Product name input field
             TextField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: 'Name')),
+
+            // Product description input field
             TextField(
                 controller: _descriptionController,
                 decoration: InputDecoration(labelText: 'Description')),
+
+            // Product price input field (only accepts numbers)
             TextField(
                 controller: _priceController,
                 decoration: InputDecoration(labelText: 'Price'),
                 keyboardType: TextInputType.number),
+
             SizedBox(height: 10),
+
+            // Show loading while fetching categories; otherwise show dropdown
             _isLoadingCategories
                 ? CircularProgressIndicator()
                 : DropdownButtonFormField<String>(
@@ -159,7 +191,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       labelText: 'Category',
                       border: OutlineInputBorder(),
                     ),
-                    value: _selectedCategoryId,
+                    value: _selectedCategoryId, // Current selected value
                     items: _categories.map((category) {
                       return DropdownMenuItem<String>(
                         value: category['id'].toString(),
@@ -168,11 +200,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedCategoryId = value;
+                        _selectedCategoryId = value; // Update selected category
                       });
                     },
                   ),
+
             SizedBox(height: 20),
+
+            // Button to trigger product update
             ElevatedButton(
               onPressed: _updateProduct,
               child: Text('Update'),

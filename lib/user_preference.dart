@@ -11,24 +11,21 @@ class UserPreferencePage extends StatefulWidget {
 }
 
 class _UserPreferencePageState extends State<UserPreferencePage> {
-  Color? selectedThemeColor;
-  String? selectedLanguage;
+  Color? selectedThemeColor; // Currently selected theme color
+  String? selectedLanguage;  // Currently selected language
 
   @override
   Widget build(BuildContext context) {
+    // Access providers for background and language
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
-    final isFilipino =
-        languageModel.isFilipino(); // Make sure this returns a bool
+    final isFilipino = languageModel.isFilipino(); // Determine language setting
 
-    // Translation strings for Filipino and English
+    // Translations for text based on selected language
     final titleText = isFilipino ? "Mga Kagustuhan" : "User Preferences";
-    final selectThemeText =
-        isFilipino ? "Piliin ang Tema" : "Select Theme Color";
-    final selectLanguageText =
-        isFilipino ? "Piliin ang Wika" : "Select Language";
-    final saveChangesText =
-        isFilipino ? "I-save ang mga pagbabago" : "Save Changes";
+    final selectThemeText = isFilipino ? "Piliin ang Tema" : "Select Theme Color";
+    final selectLanguageText = isFilipino ? "Piliin ang Wika" : "Select Language";
+    final saveChangesText = isFilipino ? "I-save ang mga pagbabago" : "Save Changes";
     final missingSelectionText = isFilipino
         ? "Pumili ng parehas na tema at wika."
         : "Please select both theme and language.";
@@ -45,8 +42,11 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // Theme selection label
             Text(selectThemeText, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 10),
+
+            // Theme selection buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -55,9 +55,14 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
                 _buildThemeButton(Color(0xFF4464AC), color2Label),
               ],
             ),
+
             const SizedBox(height: 40),
+
+            // Language selection label
             Text(selectLanguageText, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 10),
+
+            // Language selection buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -66,29 +71,30 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
                 _buildLanguageButton("Filipino"),
               ],
             ),
+
             const SizedBox(height: 40),
+
+            // Save changes button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 backgroundColor: backgroundModel.buyBtn,
               ),
               onPressed: () {
                 if (selectedThemeColor != null && selectedLanguage != null) {
-                  // Apply selected theme
+                  // Apply selected theme based on color
                   if (selectedThemeColor == const Color(0xFFC3A7E4)) {
                     backgroundModel.reset();
                   } else if (selectedThemeColor == const Color(0xFF4464AC)) {
                     backgroundModel.applyPurpleTheme();
                   }
 
-                  // Apply selected language
+                  // Set selected language
                   languageModel.setLanguage(selectedLanguage!);
 
-                  // Delay to allow state update before checking new language
+                  // Show confirmation SnackBar after state updates
                   Future.delayed(Duration.zero, () {
-                    final updatedLang =
-                        Provider.of<LanguageModel>(context, listen: false);
+                    final updatedLang = Provider.of<LanguageModel>(context, listen: false);
                     final confirmationText = updatedLang.isFilipino()
                         ? "Mga pagbabago ay na-save!"
                         : "Changes saved!";
@@ -98,6 +104,7 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
                     );
                   });
                 } else {
+                  // Show error if selections are missing
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(missingSelectionText)),
                   );
@@ -111,6 +118,7 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
     );
   }
 
+  // Helper to build theme selection buttons
   Widget _buildThemeButton(Color color, String label) {
     return ElevatedButton(
       onPressed: () {
@@ -128,6 +136,7 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
     );
   }
 
+  // Helper to build language selection buttons
   Widget _buildLanguageButton(String lang) {
     return ElevatedButton(
       onPressed: () {
