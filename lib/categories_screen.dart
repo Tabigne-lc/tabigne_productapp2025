@@ -6,7 +6,6 @@ import 'product_card.dart';
 import '/models/background_model.dart';
 import '/models/language_model.dart';
 import 'package:provider/provider.dart';
-import 'config.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final int initialCategoryId;
@@ -23,26 +22,31 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   late int selectedCategoryId; // Holds the currently selected category ID
   late String selectedCategoryName; // Holds the name of the selected category
-  late Future<List<Map<String, dynamic>>> _categoriesFuture; // Future to load categories
+  late Future<List<Map<String, dynamic>>>
+      _categoriesFuture; // Future to load categories
   int _currentPage = 1; // Tracks the current page number for pagination
   bool _isLoadingMore = false; // Prevents multiple fetches at the same time
   bool _hasMore = true; // Indicates if there are more products to fetch
   List<Product> _products = []; // List of loaded products
-  final ScrollController _scrollController = ScrollController(); // Controls scroll for infinite loading
+  final ScrollController _scrollController =
+      ScrollController(); // Controls scroll for infinite loading
 
   @override
   void initState() {
     super.initState();
     selectedCategoryId = widget.initialCategoryId;
     selectedCategoryName = widget.initialCategoryName;
-    _categoriesFuture = CategoryService.getCategories(); // Fetch categories when the screen loads
+    _categoriesFuture = CategoryService
+        .getCategories(); // Fetch categories when the screen loads
     _fetchInitialProducts(); // Fetch initial products for the selected category
-    _scrollController.addListener(_onScroll); // Listen for scroll to implement infinite scrolling
+    _scrollController.addListener(
+        _onScroll); // Listen for scroll to implement infinite scrolling
   }
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Dispose scroll controller to avoid memory leaks
+    _scrollController
+        .dispose(); // Dispose scroll controller to avoid memory leaks
     super.dispose();
   }
 
@@ -57,7 +61,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _fetchProductsPage() async {
-    if (!_hasMore || _isLoadingMore) return; // Exit if already loading or no more data
+    if (!_hasMore || _isLoadingMore)
+      return; // Exit if already loading or no more data
     setState(() {
       _isLoadingMore = true; // Indicate loading has started
     });
@@ -65,7 +70,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       final result = await ProductService.fetchProductsByCategoryPaginated(
           selectedCategoryId, _currentPage); // Fetch paginated products
       setState(() {
-        _products.addAll(result['products']); // Add fetched products to the list
+        _products
+            .addAll(result['products']); // Add fetched products to the list
         _hasMore = result['hasMore']; // Update if more products are available
         _isLoadingMore = false;
         _currentPage++; // Move to next page for future fetches
@@ -140,14 +146,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundModel = Provider.of<Backgroundmodel>(context); // Used to get background color settings
-    final languageModel = Provider.of<LanguageModel>(context); // Used to toggle between languages
-    final isFilipino = languageModel.isFilipino(); // Check if current language is Filipino
+    final backgroundModel = Provider.of<Backgroundmodel>(
+        context); // Used to get background color settings
+    final languageModel =
+        Provider.of<LanguageModel>(context); // Used to toggle between languages
+    final isFilipino =
+        languageModel.isFilipino(); // Check if current language is Filipino
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            isFilipino ? 'Mga Produkto ng Kategorya' : 'Category Products'), // AppBar title depends on language
+        title: Text(isFilipino
+            ? 'Mga Produkto ng Kategorya'
+            : 'Category Products'), // AppBar title depends on language
         backgroundColor: backgroundModel.appBar,
       ),
       backgroundColor: backgroundModel.background,
@@ -155,11 +165,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         future: _categoriesFuture, // Future to fetch categories
         builder: (context, catSnapshot) {
           if (catSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator()); // Show loader while waiting
+            return const Center(
+                child:
+                    CircularProgressIndicator()); // Show loader while waiting
           } else if (catSnapshot.hasError) {
-            return Center(child: Text('Error: \\${catSnapshot.error}')); // Show error if any
+            return Center(
+                child:
+                    Text('Error: \\${catSnapshot.error}')); // Show error if any
           } else if (!catSnapshot.hasData || catSnapshot.data!.isEmpty) {
-            return const Center(child: Text('No categories found.')); // Handle empty data
+            return const Center(
+                child: Text('No categories found.')); // Handle empty data
           }
           final categories = catSnapshot.data!;
           return Column(
@@ -205,7 +220,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     crossAxisSpacing: 12,
                     childAspectRatio: 0.85,
                   ),
-                  itemCount: _products.length + (_isLoadingMore ? 1 : 0), // Add extra item for loader
+                  itemCount: _products.length +
+                      (_isLoadingMore ? 1 : 0), // Add extra item for loader
                   itemBuilder: (context, index) {
                     if (index < _products.length) {
                       return ProductCardWidget(
@@ -216,7 +232,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       return const Center(
                           child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(), // Show loader while loading more
+                        child:
+                            CircularProgressIndicator(), // Show loader while loading more
                       ));
                     }
                   },

@@ -48,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
 
-    final themeColor = backgroundModel.accent;
     final bool isFilipino = languageModel.isFilipino();
 
     final String createProductText =

@@ -118,97 +118,153 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1E2A47),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Shopaholic',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w400,
-                fontStyle: FontStyle.italic,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 40),
-            if (_isLoginMode) ...[
-              _buildTextField('Username', _loginUsernameController),
-              const SizedBox(height: 20),
-              _buildTextField('Password', _loginPasswordController,
-                  obscureText: true, isPassword: true),
-              const SizedBox(height: 10),
-              if (errorMessage.isNotEmpty) ...[
-                Text(errorMessage, style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 10),
-              ],
-              ElevatedButton(
-                onPressed: isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pinkAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Log In',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white),
-                      ),
-              )
-            ] else ...[
-              _buildTextField('Name', _signUpNameController),
-              const SizedBox(height: 10),
-              _buildTextField('Email', _signUpEmailController),
-              const SizedBox(height: 10),
-              _buildTextField('Password', _signUpPasswordController,
-                  obscureText: true),
-              const SizedBox(height: 10),
-              _buildTextField(
-                  'Confirm Password', _signUpConfirmPasswordController,
-                  obscureText: true),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pinkAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo/Icon
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.pinkAccent.withOpacity(0.2),
+                      blurRadius: 20,
+                      spreadRadius: 2,
                     ),
-                  ),
-                  onPressed: () {
-                    // Handle sign up logic here
-                  },
-                  child: isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Sign Up", style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+                padding: const EdgeInsets.all(18),
+                child: const Icon(Icons.shopping_bag_rounded,
+                    size: 48, color: Colors.pinkAccent),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Shopaholic',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 36),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_isLoginMode) ...[
+                      _buildTextField('Username', _loginUsernameController),
+                      const SizedBox(height: 18),
+                      _buildTextField('Password', _loginPasswordController,
+                          obscureText: true, isPassword: true),
+                      const SizedBox(height: 10),
+                      if (errorMessage.isNotEmpty) ...[
+                        Text(errorMessage,
+                            style: const TextStyle(color: Colors.red)),
+                        const SizedBox(height: 10),
+                      ],
+                      ElevatedButton(
+                        onPressed: isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.pinkAccent,
+                          elevation: 6,
+                          shadowColor: Colors.pinkAccent.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Text(
+                                'Log In',
+                                style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5),
+                              ),
+                      )
+                    ] else ...[
+                      _buildTextField('Name', _signUpNameController),
+                      const SizedBox(height: 10),
+                      _buildTextField('Email', _signUpEmailController),
+                      const SizedBox(height: 10),
+                      _buildTextField('Password', _signUpPasswordController,
+                          obscureText: true),
+                      const SizedBox(height: 10),
+                      _buildTextField(
+                          'Confirm Password', _signUpConfirmPasswordController,
+                          obscureText: true),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pinkAccent,
+                            elevation: 6,
+                            shadowColor: Colors.pinkAccent.withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Handle sign up logic here
+                          },
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Sign Up",
+                                  style: TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      letterSpacing: 0.5)),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 15),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLoginMode = !_isLoginMode;
+                        });
+                      },
+                      child: Text(
+                        _isLoginMode
+                            ? "Don't have an account? Sign up"
+                            : "Already have an account? Log In",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            fontSize: 15),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _isLoginMode = !_isLoginMode;
-                });
-              },
-              child: Text(
-                _isLoginMode
-                    ? "Don't have an account? Sign up"
-                    : "Already have an account? Log In",
-                style: const TextStyle(
-                    color: Colors.white, decoration: TextDecoration.underline),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
