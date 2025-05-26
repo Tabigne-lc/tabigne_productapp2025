@@ -17,20 +17,21 @@ class MyProductsScreen extends StatefulWidget {
 }
 
 class _MyProductsScreenState extends State<MyProductsScreen> {
-  List<Product> _products = [];
-  final Set<int> _selectedProductIds = {};
+  List<Product> _products = []; // List to hold fetched products
+  final Set<int> _selectedProductIds = {}; // Stores IDs of selected products
 
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
+    _fetchProducts(); // Load products when the screen initializes
   }
 
   Future<void> _fetchProducts() async {
+    // Fetch products associated with the current user
     final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/products/${widget.userId}'));
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
-      // Always treat as a list of products (API returns {data: [...]})
+      // API may return either a map (with a 'data' key) or a list
       final List<dynamic> data = (body is Map && body['data'] != null)
           ? body['data']
           : (body is List ? body : [body]);
@@ -38,24 +39,25 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         _products = data.map((item) => Product.fromJson(item)).toList();
       });
     } else {
-      // Handle error
+      // Handle error (e.g., show snackbar)
     }
   }
 
   Future<void> _deleteProduct(int id) async {
-    final response =
-        await http.delete(Uri.parse('${AppConfig.baseUrl}/api/products/$id'));
+    // Deletes a product by its ID
+    final response = await http.delete(Uri.parse('${AppConfig.baseUrl}/api/products/$id'));
     if (response.statusCode == 200) {
       setState(() {
         _products.removeWhere((product) => product.id == id);
-        _selectedProductIds.remove(id);
+        _selectedProductIds.remove(id); // Remove from selected IDs if applicable
       });
     } else {
-      // Handle error
+      // Handle deletion error
     }
   }
 
   Future<void> _deleteSelectedProducts() async {
+    // Ask user to confirm deletion of selected items
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -72,6 +74,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ),
     );
     if (confirm == true) {
+      // Delete each selected product
       for (var id in _selectedProductIds) {
         await _deleteProduct(id);
       }
@@ -79,6 +82,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   }
 
   void _editSelectedProduct() {
+    // Allows editing only if one product is selected
     if (_selectedProductIds.length == 1) {
       final productId = _selectedProductIds.first;
       final product = _products.firstWhere((p) => p.id == productId);
@@ -87,13 +91,13 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         MaterialPageRoute(
           builder: (context) => EditProductScreen(product: product),
         ),
-      ).then((_) => _fetchProducts());
+      ).then((_) => _fetchProducts()); // Refresh after editing
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final backgroundModel = Provider.of<Backgroundmodel>(context);
+    final backgroundModel = Provider.of<Backgroundmodel>(context); // Get background color model
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Products', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -195,10 +199,11 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                           MaterialPageRoute(
                             builder: (context) => EditProductScreen(product: product),
                           ),
-                        ).then((_) => _fetchProducts());
+                        ).then((_) => _fetchProducts()); // Refresh after editing
                       },
                     ),
                     onLongPress: () async {
+                      // Prompt user for confirmation before deleting
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -215,7 +220,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                         ),
                       );
                       if (confirm == true) {
-                        await _deleteProduct(product.id);
+                        await _deleteProduct(product.id); // Delete if confirmed
                       }
                     },
                   ),

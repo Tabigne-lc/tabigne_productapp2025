@@ -240,8 +240,7 @@ class DetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          // You can add a section for similar products or reviews here for more e-commerce feel
-        ],
+          
       ),
     );
   }

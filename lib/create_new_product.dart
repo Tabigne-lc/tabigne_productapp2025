@@ -18,7 +18,9 @@ class CreateNewProduct extends StatefulWidget {
   _AddProductScreenState createState() => _AddProductScreenState();
 }
 
+// Service class for sending new product data to the backend
 class CreateNewProductService {
+  // Method to add a product via HTTP POST request
   static Future<bool> addProduct({
     required String name,
     required String description,
@@ -27,37 +29,42 @@ class CreateNewProductService {
     required int userId,
     File? image,
   }) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/api/products');
-    var request = http.MultipartRequest('POST', url);
+    final url = Uri.parse('${AppConfig.baseUrl}/api/products'); // API endpoint
+    var request = http.MultipartRequest('POST', url); // Multipart request for sending file and data
+
+    // Add form fields to the request
     request.fields['name'] = name;
     request.fields['description'] = description;
     request.fields['price'] = price;
     request.fields['category_id'] = categoryId.toString();
     request.fields['user_id'] = userId.toString();
 
+    // If an image is selected, attach it to the request
     if (image != null) {
       request.files.add(await http.MultipartFile.fromPath('image', image.path));
     }
 
-    final response = await request.send();
+    final response = await request.send(); // Send request to server
     if (response.statusCode == 201) {
-      return true;
+      return true; // Product successfully created
     } else {
-      throw Exception('Failed to add product');
+      throw Exception('Failed to add product'); // Handle failure
     }
   }
 }
 
 class _AddProductScreenState extends State<CreateNewProduct> {
-  String? selectedCategory;
+  String? selectedCategory; // Stores selected category ID (as string)
   final TextEditingController productNameController = TextEditingController();
-  final TextEditingController productDescriptionController =
-      TextEditingController();
+  final TextEditingController productDescriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
 
-  List<Map<String, dynamic>> categories = [];
-  bool isLoadingCategories = true;
+  List<Map<String, dynamic>> categories = []; // List of category options
+  bool isLoadingCategories = true; // Show loader until categories are fetched
 
+  File? _image; // Selected product image
+
+  // Optional mapping logic (unused in dropdown, but useful fallback)
   int mapCategoryToId(String categoryName) {
     switch (categoryName) {
       case "Lotion":
@@ -71,13 +78,12 @@ class _AddProductScreenState extends State<CreateNewProduct> {
     }
   }
 
-  File? _image;
-
+  // Method to allow user to select an image from gallery
   Future<void> _pickImage() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() {
-        _image = File(picked.path);
+        _image = File(picked.path); // Convert picked file into File
       });
     }
   }
@@ -85,23 +91,24 @@ class _AddProductScreenState extends State<CreateNewProduct> {
   @override
   void initState() {
     super.initState();
-    loadCategories();
+    loadCategories(); // Fetch category data on screen load
   }
 
+  // Load categories from backend using CategoryService
   void loadCategories() async {
     try {
-      categories = await CategoryService.getCategories();
+      categories = await CategoryService.getCategories(); // Get categories list
     } finally {
       setState(() {
-        isLoadingCategories = false;
+        isLoadingCategories = false; // Remove loading spinner
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
-    final backgroundModel = Provider.of<Backgroundmodel>(context);
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino(); // Check current language setting
+    final backgroundModel = Provider.of<Backgroundmodel>(context); // Get theme colors
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -112,7 +119,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context), // Go back to previous screen
         ),
       ),
       body: Padding(
@@ -120,6 +127,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Section: Product image upload
             Text(
               isFilipino
                   ? "Magdagdag ng mga larawan ng produkto"
@@ -132,6 +140,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                   : "Add up to 5 images. First image will be highlighted.",
             ),
             SizedBox(height: 10),
+            // Display selected image or an "add" icon
             GestureDetector(
               onTap: _pickImage,
               child: _image == null
@@ -147,12 +156,17 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                   : Image.file(_image!,
                       height: 80, width: 80, fit: BoxFit.cover),
             ),
+
             SizedBox(height: 20),
+
+            // Section: Product details
             Text(
               isFilipino ? "Mga detalye ng produkto" : "Product details",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
+
+            // Dropdown for selecting category
             isLoadingCategories
                 ? CircularProgressIndicator()
                 : DropdownButtonFormField<String>(
@@ -165,17 +179,20 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                     value: selectedCategory,
                     items: categories.map((category) {
                       return DropdownMenuItem<String>(
-                        value: category['id'].toString(),
+                        value: category['id'].toString(), // Set value to category ID
                         child: Text(category['name']),
                       );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        selectedCategory = value;
+                        selectedCategory = value; // Save selected category
                       });
                     },
                   ),
+
             SizedBox(height: 10),
+
+            // Product name input
             TextField(
               controller: productNameController,
               decoration: InputDecoration(
@@ -183,7 +200,10 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                 border: OutlineInputBorder(),
               ),
             ),
+
             SizedBox(height: 10),
+
+            // Product description input
             TextField(
               controller: productDescriptionController,
               maxLines: 4,
@@ -194,7 +214,10 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                 border: OutlineInputBorder(),
               ),
             ),
+
             SizedBox(height: 10),
+
+            // Product price input
             TextField(
               controller: priceController,
               keyboardType: TextInputType.number,
@@ -203,13 +226,16 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                 border: OutlineInputBorder(),
               ),
             ),
+
             Spacer(),
+
+            // Action Buttons: Cancel & Add Product
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context); // Cancel and go back
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: backgroundModel.secondBtn,
@@ -222,6 +248,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
+                      // Check for empty fields
                       if (productNameController.text.isEmpty ||
                           productDescriptionController.text.isEmpty ||
                           priceController.text.isEmpty ||
@@ -234,6 +261,8 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                         );
                         return;
                       }
+
+                      // Get user ID from SharedPreferences
                       final prefs = await SharedPreferences.getInstance();
                       final userId = prefs.getInt('user_id');
                       if (userId == null) {
@@ -243,6 +272,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                         return;
                       }
 
+                      // Try to submit the product using the service class
                       try {
                         await CreateNewProductService.addProduct(
                           name: productNameController.text,
@@ -250,9 +280,10 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                           price: priceController.text,
                           categoryId: int.parse(selectedCategory!),
                           userId: userId,
-                          image: _image, // pass to service
+                          image: _image, // optional image
                         );
 
+                        // Show success message
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text(isFilipino
@@ -260,28 +291,7 @@ class _AddProductScreenState extends State<CreateNewProduct> {
                                   : "Product added successfully!")),
                         );
 
-                        Navigator.pop(context);
+                        Navigator.pop(context); // Go back after adding
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(isFilipino
-                                  ? "Nabigo ang pagdaragdag ng produkto."
-                                  : "Failed to add product.")),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: backgroundModel.button,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text(isFilipino ? "Idagdag" : "Add product"),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+                        // Handle failure
+                        ScaffoldMessenger.of(context).show
