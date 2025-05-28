@@ -61,8 +61,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _fetchProductsPage() async {
-    if (!_hasMore || _isLoadingMore)
+    if (!_hasMore || _isLoadingMore) {
       return; // Exit if already loading or no more data
+    }
     setState(() {
       _isLoadingMore = true; // Indicate loading has started
     });

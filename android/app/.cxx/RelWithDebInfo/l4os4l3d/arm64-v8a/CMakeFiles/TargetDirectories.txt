@@ -1,0 +1,2 @@
+C:/Users/LENOVO/Documents/Mobile_Dev/commission/rovi_commission/tabigne_productapp2025/android/app/.cxx/RelWithDebInfo/l4os4l3d/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/LENOVO/Documents/Mobile_Dev/commission/rovi_commission/tabigne_productapp2025/android/app/.cxx/RelWithDebInfo/l4os4l3d/arm64-v8a/CMakeFiles/rebuild_cache.dir
